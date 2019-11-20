@@ -6,6 +6,5 @@ import "context"
 
 // AirplaneStorer will return all airplanes from a data store.
 type AirplaneStorer interface{
-	Airplane(ctx context.Context, id int64) (string, error)
 	Airplanes(ctx context.Context) ([]string, error)
 }
