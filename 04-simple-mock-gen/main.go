@@ -26,6 +26,9 @@ func main() {
 		log.Fatal("type must be provided")
 	}
 	fmt.Printf("Starting mock generation for %s\n", typeName)
+	// load the packing information along with Type and Syntax information.
+	// I just want to load the current package, but for  proper version
+	// package pattern would be an input field
 	pkg, _ := packages.Load(&packages.Config{
 		Mode:       packages.NeedTypes | packages.NeedSyntax | packages.NeedDeps | packages.NeedImports,
 		Dir:        ".",
@@ -37,6 +40,7 @@ func main() {
 	if !types.IsInterface(obj.Type()){
 		log.Fatalf("%s is not an Interface", typeName)
 	}
+	// convert our Object to an interface and call complete to gather all method information.
 	intface := obj.Type().Underlying().(*types.Interface).Complete()
 	o := Obj{
 		PkgName: "main",
@@ -47,7 +51,6 @@ func main() {
 	for i := 0; i < intface.NumMethods(); i++{
 		meth := intface.Method(i)
 		sig := meth.Type().(*types.Signature)
-
 		method := Method{
 			Name:      meth.Name(),
 			Params:sig.Params().String(),
@@ -62,7 +65,7 @@ func main() {
 	}
 	fmt.Println("Compiling output")
 	bb, _ := ioutil.ReadFile("mock.template")
-	tmpl := template.Must(template.New("moq").Parse(fmt.Sprintf("%s", bb)))
+	tmpl := template.Must(template.New("mock").Parse(fmt.Sprintf("%s", bb)))
 	// run the text/template with our args
 	var buf bytes.Buffer
 	if err := tmpl.Execute(&buf, o);err != nil {
@@ -74,11 +77,18 @@ func main() {
 		log.Fatalf("go/format: %s", err)
 	}
 	// output the file
-	var output bytes.Buffer
-	if _, err := output.Write(formatted); err != nil {
+	var formatBytes bytes.Buffer
+	if _, err := formatBytes.Write(formatted); err != nil {
 		log.Fatalf("failed to write formated %s", err)
 	}
-	if err := ioutil.WriteFile( strings.ToLower(typeName) + "_mock.go", output.Bytes(), 0644); err != nil{
+	outputName := strings.ToLower(typeName) + "_mock.go"
+	if output != ""{
+		outputName = output
+		if !strings.HasSuffix(outputName, ".go"){
+			outputName = outputName + ".go"
+		}
+	}
+	if err := ioutil.WriteFile( outputName, formatBytes.Bytes(), 0644); err != nil{
 		log.Fatalf("failed to write to file %s", err)
 	}
 	fmt.Println("All done")
