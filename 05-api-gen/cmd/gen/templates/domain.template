@@ -1,0 +1,14 @@
+// This code was created by a generator {{ .Date }}
+// CAUTION - If the generator is re-ran it will override the contents of this file
+
+package {{ .Domain }}s
+
+import "context"
+
+//go:generate 04-simple-mock-gen -type={{ .Domain }}Storer
+
+// {{ .DomainTitle }}Storer will return all {{ .Domain }} from a data store.
+type {{ .DomainTitle }}Storer interface{
+	{{ .DomainTitle }}s(ctx context.Context) ([]string, error)
+}
+

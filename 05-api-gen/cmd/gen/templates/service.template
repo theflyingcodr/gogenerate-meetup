@@ -1,0 +1,26 @@
+// This code was created by a generator {{ .Date }}
+// CAUTION - If the generator is re-ran it will override the contents of this file
+
+package {{ .Domain }}s
+
+import (
+	"context"
+	"github.com/pkg/errors"
+)
+
+type {{ .Domain }}Svc struct{
+	store {{ .DomainTitle }}Storer
+}
+
+func New{{ .DomainTitle }}Svc(store {{ .DomainTitle }}Storer) *{{ .Domain }}Svc {
+	return &{{ .Domain }}Svc{store: store}
+}
+
+func (s *{{ .Domain }}Svc) {{ .DomainTitle }}s(ctx context.Context) ([]string, error){
+	{{ .Domain }}s, err := s.store.{{ .DomainTitle }}s(ctx)
+	if err != nil{
+		return nil, errors.WithMessage(err, "oh no, it died")
+	}
+	// TODO add additional logic
+	return {{ .Domain }}s, nil
+}

@@ -1,0 +1,43 @@
+// This code was created by a generator {{ .Date }}
+// CAUTION - If the generator is re-ran it will override the contents of this file
+
+package {{ .Domain }}s
+
+import (
+	"encoding/json"
+	"net/http"
+	api "github.com/theflyingcodr/gogenerate-meetup/05-api-gen"
+	"fmt"
+)
+
+type httpHandler struct{
+	svc {{ .DomainTitle }}Storer
+}
+
+func NewHttpHandler(svc {{ .DomainTitle }}Storer) *httpHandler {
+	return &httpHandler{svc:svc}
+}
+
+func (h *httpHandler) Register(){
+	http.HandleFunc(api.Route{{ .DomainTitle }}sGET, h. {{ .DomainTitle }}s)
+}
+
+func (h *httpHandler) {{ .DomainTitle }}s(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet{
+		w.WriteHeader(http.StatusMethodNotAllowed)
+	}
+	w.Header().Add("content-type","application/json")
+
+	aa, err := h.svc.{{ .DomainTitle }}s(r.Context())
+	if err != nil{
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprint(w, err.Error())
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	if err := json.NewEncoder(w).Encode(aa); err != nil{
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprint(w, err.Error())
+	}
+	return
+}
