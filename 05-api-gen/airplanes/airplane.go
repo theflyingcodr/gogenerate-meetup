@@ -1,4 +1,4 @@
-package airplane
+package airplanes
 
 import "context"
 

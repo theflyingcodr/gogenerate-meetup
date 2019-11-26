@@ -1,17 +1,4 @@
 # gogenerate-meetup
-Slides and test projects for meetup talk
+Slides and test projects for [Belfast Gophers Meetup](https://www.meetup.com/Belfast-Gophers/events/265374309/) talk
 
-# Things to cover
-
-- [ ] History of GoGenerate
-- [ ] Examples of GoGenerate
-- [ ] Stringer
-- [ ] Moq
-- [ ] Using GoGenerate via cli and comments
-- [ ] GoGenerate in CI
-- [ ] Other uses for generating code
-- [ ] Tedious tasks like bootstrapping apps & APIs
-- [ ] Spaces Generate
-- [ ] Text Templates
-- [ ] AST - Checking for type existence & validating code
-- [ ] Demos
+Slides can be found [here](https://docs.google.com/presentation/d/1Rw93wOnYXz8_h4t9kuuSWbF5SIJe0nMlatOli3YQ228/edit?usp=sharing)
