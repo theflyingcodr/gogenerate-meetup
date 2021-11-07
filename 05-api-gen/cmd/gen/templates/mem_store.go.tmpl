@@ -1,0 +1,37 @@
+// This code was created by a generator {{ .Date }}
+// CAUTION - If the generator is re-ran it will override the contents of this file
+
+package {{ .Domain }}s
+
+import "context"
+
+// memoryStore is an in memory store that returns static data
+// but could implment a full sql data store for example.
+type memoryStore struct{
+	{{ .Domain }}s []{{ .DomainTitle }}
+}
+
+// NewMemoryStore will setup and a return a new in-memory data store.
+// This is useful for testing only.
+func NewMemoryStore() *memoryStore{
+	return &memoryStore{
+		{{ .Domain }}s: []{{ .DomainTitle }}{
+			{
+				ID:1,
+				Name: "test",
+			},
+		},
+	}
+}
+
+// {{ .DomainTitle }}s will return all {{ .DomainTitle }}s currently stored.
+func (m *memoryStore) {{ .DomainTitle }}s(ctx context.Context) ([]{{ .DomainTitle }}, error){
+	return m.{{ .Domain }}s, nil
+}
+
+// {{ .DomainTitle }}s will add a new {{ .Domain }} to the data store.
+func (m *memoryStore) {{ .DomainTitle }}Create(ctx context.Context, req {{ .DomainTitle }}) (*{{ .DomainTitle }}, error){
+	req.ID = len(m.{{ .Domain }}s)+1
+	m.{{ .Domain }}s = append(m.{{ .Domain }}s, req)
+	return &req, nil
+}

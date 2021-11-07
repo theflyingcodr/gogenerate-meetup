@@ -1,32 +1,32 @@
-// This code was created by a generator 2021-11-07T21:11:51Z
+// This code was created by a generator {{ .Date }}
 // CAUTION - If the generator is re-ran it will override the contents of this file
 
-package airplanes
+package {{ .Domain }}s
 
 import (
 	"encoding/json"
-	"fmt"
-	api "github.com/theflyingcodr/gogenerate-meetup/05-api-gen"
 	"net/http"
+	api "github.com/theflyingcodr/gogenerate-meetup/05-api-gen"
+	"fmt"
 )
 
-type httpHandler struct {
-	svc AirplaneService
+type httpHandler struct{
+	svc {{ .DomainTitle }}Service
 }
 
-// NewHttpHandler will setup and return an http handler for Airplanes.
-func NewHttpHandler(svc AirplaneService) *httpHandler {
-	return &httpHandler{svc: svc}
+// NewHttpHandler will setup and return an http handler for {{ .DomainTitle }}s.
+func NewHttpHandler(svc {{ .DomainTitle }}Service) *httpHandler {
+	return &httpHandler{svc:svc}
 }
 
 // Register will setup rest endpoints.
-func (h *httpHandler) Register() {
-	http.HandleFunc(api.RouteAirplanes, h.Airplanes)
+func (h *httpHandler) Register(){
+	http.HandleFunc(api.Route{{ .DomainTitle }}s, h.{{ .DomainTitle }}s)
 }
 
-// Airplanes will handle http requests for Airplanes.
-func (h *httpHandler) Airplanes(w http.ResponseWriter, r *http.Request) {
-	w.Header().Add("content-type", "application/json")
+// {{ .DomainTitle }}s will handle http requests for {{ .DomainTitle }}s.
+func (h *httpHandler) {{ .DomainTitle }}s(w http.ResponseWriter, r *http.Request) {
+		w.Header().Add("content-type", "application/json")
 
 	switch r.Method {
 	case http.MethodGet:
@@ -40,8 +40,8 @@ func (h *httpHandler) Airplanes(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-func (h *httpHandler) airplanes(w http.ResponseWriter, r *http.Request) {
-	resp, err := h.svc.Airplanes(r.Context())
+func (h *httpHandler) {{ .Domain }}s(w http.ResponseWriter, r *http.Request) {
+	resp, err := h.svc.{{ .DomainTitle }}s(r.Context())
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, err.Error())
@@ -54,15 +54,15 @@ func (h *httpHandler) airplanes(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// create will handle http requests for adding Airplanes.
+// create will handle http requests for adding {{ .DomainTitle }}s.
 func (h *httpHandler) create(w http.ResponseWriter, r *http.Request) {
-	var req Airplane
+	var req {{ .DomainTitle }}
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, err.Error())
 		return
 	}
-	resp, err := h.svc.AirplaneCreate(r.Context(), req)
+	resp, err := h.svc.{{ .DomainTitle }}Create(r.Context(), req)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, err.Error())

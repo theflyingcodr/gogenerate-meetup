@@ -13,3 +13,8 @@
 .idea
 .code
 .vscode
+
+# Ignore all the auto gen code to ensure we have a clean repo for each pull
+02-moq-example-generated/airplane_mock.go
+03-moq-example-gogenerate/airplane_mock.go
+04-simple-mock-gen/airplanereader_mock.go

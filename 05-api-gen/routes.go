@@ -1,5 +1,6 @@
 package api
 
 const (
-	RouteAirplanesGET = "/api/v1/airplanes"
+	RouteAirplane  = "/api/v1/airplanes"
+	RouteAirplanes = "/api/v1/airplanes"
 )

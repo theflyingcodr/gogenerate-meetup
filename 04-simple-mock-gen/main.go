@@ -2,21 +2,26 @@ package main
 
 import (
 	"bytes"
+	_ "embed"
 	"flag"
 	"fmt"
 	"go/format"
 	"go/types"
-	"golang.org/x/tools/go/packages"
 	"io/ioutil"
 	"log"
 	"strings"
 	"text/template"
+
+	"golang.org/x/tools/go/packages"
 )
 
 var (
 	typeName string
-	output string
+	output   string
 )
+
+//go:embed mock.template
+var tmpl string
 
 func main() {
 	flag.StringVar(&typeName, "type", "", "Name of type to generate mock for")
@@ -30,45 +35,44 @@ func main() {
 	// I just want to load the current package, but for  proper version
 	// package pattern would be an input field
 	pkg, _ := packages.Load(&packages.Config{
-		Mode:       packages.NeedTypes | packages.NeedSyntax | packages.NeedDeps | packages.NeedImports,
-		Dir:        ".",
+		Mode: packages.NeedTypes | packages.NeedSyntax | packages.NeedDeps | packages.NeedImports,
+		Dir:  ".",
 	}, ".")
-	if len(pkg) == 0{
+	if len(pkg) == 0 {
 		log.Fatal("cannot find package main")
 	}
 	obj := pkg[0].Types.Scope().Lookup(typeName)
-	if !types.IsInterface(obj.Type()){
+	if !types.IsInterface(obj.Type()) {
 		log.Fatalf("%s is not an Interface", typeName)
 	}
 	// convert our Object to an interface and call complete to gather all method information.
 	intface := obj.Type().Underlying().(*types.Interface).Complete()
 	o := Obj{
-		PkgName: "main",
+		PkgName:  "main",
 		TypeName: typeName,
-		Methods:  make([]Method,0),
+		Methods:  make([]Method, 0),
 	}
 	fmt.Println("Enumerating methods")
-	for i := 0; i < intface.NumMethods(); i++{
+	for i := 0; i < intface.NumMethods(); i++ {
 		meth := intface.Method(i)
 		sig := meth.Type().(*types.Signature)
 		method := Method{
-			Name:      meth.Name(),
-			Params:sig.Params().String(),
-			Returns:sig.Results().String(),
+			Name:    meth.Name(),
+			Params:  sig.Params().String(),
+			Returns: sig.Results().String(),
 		}
 		var paramNames []string
-		for ii := 0; ii < sig.Params().Len();ii++{
+		for ii := 0; ii < sig.Params().Len(); ii++ {
 			paramNames = append(paramNames, sig.Params().At(ii).Name())
 		}
-		method.ParamNames = strings.Join(paramNames,", ")
+		method.ParamNames = strings.Join(paramNames, ", ")
 		o.Methods = append(o.Methods, method)
 	}
 	fmt.Println("Compiling output")
-	bb, _ := ioutil.ReadFile("mock.template")
-	tmpl := template.Must(template.New("mock").Parse(fmt.Sprintf("%s", bb)))
+	tmpl := template.Must(template.New("mock").Parse(tmpl))
 	// run the text/template with our args
 	var buf bytes.Buffer
-	if err := tmpl.Execute(&buf, o);err != nil {
+	if err := tmpl.Execute(&buf, o); err != nil {
 		log.Fatalf("failed to exec template %s", err)
 	}
 	// run go format on the executed template to tidy our source
@@ -82,27 +86,27 @@ func main() {
 		log.Fatalf("failed to write formated %s", err)
 	}
 	outputName := strings.ToLower(typeName) + "_mock.go"
-	if output != ""{
+	if output != "" {
 		outputName = output
-		if !strings.HasSuffix(outputName, ".go"){
+		if !strings.HasSuffix(outputName, ".go") {
 			outputName = outputName + ".go"
 		}
 	}
-	if err := ioutil.WriteFile( outputName, formatBytes.Bytes(), 0644); err != nil{
+	if err := ioutil.WriteFile(outputName, formatBytes.Bytes(), 0644); err != nil {
 		log.Fatalf("failed to write to file %s", err)
 	}
 	fmt.Println("All done")
 }
 
-type Obj struct{
-	PkgName string
+type Obj struct {
+	PkgName  string
 	TypeName string
-	Methods []Method
+	Methods  []Method
 }
 
-type Method struct{
-	Name string
-	Params string
-	Returns string
+type Method struct {
+	Name       string
+	Params     string
+	Returns    string
 	ParamNames string
 }

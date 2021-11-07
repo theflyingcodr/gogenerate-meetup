@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"embed"
 	"flag"
 	"fmt"
 	"go/ast"
@@ -12,7 +13,6 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
-	"path/filepath"
 	"sort"
 	"strings"
 	"text/template"
@@ -20,6 +20,9 @@ import (
 
 	"golang.org/x/tools/go/ast/astutil"
 )
+
+//go:embed templates/*
+var templateFiles embed.FS
 
 var (
 	domain      string
@@ -53,15 +56,12 @@ func generateDomain() {
 	if err := os.Mkdir("../../"+domain+"s", 0755); err != nil {
 		log.Fatalf("failed to create %s directory %s", domain, err)
 	}
+
 	for _, tmplName := range templates {
 		log.Printf("Creating %s.go file\n", tmplName)
-		bb, err := ioutil.ReadFile(filepath.Join("templates", tmplName+".template"))
+		tmpl, err := template.ParseFS(templateFiles, "templates/"+tmplName+".go.tmpl")
 		if err != nil {
-			log.Fatalf("failed to read %s: %s", tmplName, err)
-		}
-		tmpl, err := template.New(tmplName).Parse(string(bb))
-		if err != nil {
-			log.Fatalf("failed to parse template %s: %s", tmplName, err)
+			log.Fatalf("failed to read template %s.go.tmpl: %s", tmplName, err)
 		}
 		buf := bytes.Buffer{}
 		if err := tmpl.Execute(&buf, args); err != nil {
@@ -88,24 +88,36 @@ func updateRoutes() {
 	if err != nil {
 		log.Fatalf("failed to parse AST from routes.go: %s", err)
 	}
-	constname := fmt.Sprintf("Route%ssGET", domainTitle)
+	routes := []string{
+		fmt.Sprintf("Route%ss", domainTitle),
+		fmt.Sprintf("Route%s", domainTitle),
+	}
+	consts := make(map[string]bool, 0)
 	d, _ := f.Decls[0].(*ast.GenDecl)
 	if d.Tok == token.CONST {
 		for _, s := range d.Specs {
 			c := s.(*ast.ValueSpec)
 
 			for _, n := range c.Names {
-				if n.Name == constname {
-					log.Printf("Constant %s already defined %s, nothing more to do\n", domain, n.Name)
-					return
-				}
+				consts[n.Name] = true
 			}
 		}
 	}
-	fmt.Printf("Constant for this domain not previously defined, updating routes.go with %s\n", constname)
 
-	con := ast.NewIdent(constname)
-	con.Obj = ast.NewObj(ast.Con, constname)
+	for _, r := range routes {
+		if !consts[r] {
+			addConstant(d, r)
+		}
+	}
+
+	formatAndSave(fs, f, "../../routes.go")
+}
+
+func addConstant(d *ast.GenDecl, c string) {
+	fmt.Printf("Constant for this domain not previously defined, updating routes.go with %s\n", c)
+
+	con := ast.NewIdent(c)
+	con.Obj = ast.NewObj(ast.Con, c)
 	conVal := &ast.BasicLit{
 		Kind:  token.STRING,
 		Value: "\"" + "/api/v1/" + domain + "s\"",
@@ -121,9 +133,7 @@ func updateRoutes() {
 	sort.Slice(d.Specs, func(i, j int) bool {
 		return d.Specs[i].(*ast.ValueSpec).Names[0].Name < d.Specs[j].(*ast.ValueSpec).Names[0].Name
 	})
-	fp := "../../routes.go"
-	formatAndSave(fs, f, fp)
-	fmt.Printf("%s constant successfully added to routes.go\n", constname)
+	fmt.Printf("%s constant successfully added to routes.go\n", c)
 }
 
 func updateMain() {
@@ -153,14 +163,10 @@ func updateMain() {
 									Sel: ast.NewIdent("New" + domainTitle + "Svc"),
 								},
 								Args: []ast.Expr{
-									&ast.UnaryExpr{
-										Op: token.AND,
-										X: &ast.CompositeLit{
-											Type: &ast.SelectorExpr{
-
-												X:   ast.NewIdent(domain + "s"),
-												Sel: ast.NewIdent("MemoryStore"),
-											},
+									&ast.CallExpr{
+										Fun: &ast.SelectorExpr{
+											X:   ast.NewIdent(domain + "s"),
+											Sel: ast.NewIdent("NewMemoryStore"),
 										},
 									},
 								},

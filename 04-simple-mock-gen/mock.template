@@ -4,6 +4,7 @@ package {{ .PkgName }}
 
 import "context"
 
+// {{ .TypeName }} contains all the mocked function calls.
 type {{ .TypeName }}Mock struct{
    {{ range .Methods -}}
     {{ .Name}}Func func{{.Params}} {{ .Returns }}
@@ -11,6 +12,7 @@ type {{ .TypeName }}Mock struct{
 }
 
 {{ range .Methods }}
+// {{ .Name}} implements the {{ .Name}} function and invokes the test code.
  func (mock *{{ $.TypeName }}Mock) {{ .Name}}{{.Params}} {{ .Returns }} {
     return mock.{{ .Name}}Func({{ .ParamNames }})
  }

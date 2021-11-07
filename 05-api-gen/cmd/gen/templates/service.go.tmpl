@@ -1,0 +1,44 @@
+// This code was created by a generator {{ .Date }}
+// CAUTION - If the generator is re-ran it will override the contents of this file
+
+package {{ .Domain }}s
+
+import (
+	"context"
+	"github.com/pkg/errors"
+)
+
+type {{ .Domain }}Svc struct{
+	rdr {{ .DomainTitle }}Reader
+	wtr {{ .DomainTitle }}Writer
+}
+
+// New{{ .DomainTitle }} is the constructor used to setup the service.
+func New{{ .DomainTitle }}Svc(rdrWtr {{ .DomainTitle }}ReaderWriter) *{{ .Domain }}Svc {
+	return &{{ .Domain }}Svc{rdr: rdrWtr, wtr:rdrWtr}
+}
+
+// {{ .DomainTitle }}s will return all {{ .DomainTitle }}s currently stored.
+func (s *{{ .Domain }}Svc) {{ .DomainTitle }}s(ctx context.Context) ([]{{ .DomainTitle }}, error){
+	{{ .Domain }}s, err := s.rdr.{{ .DomainTitle }}s(ctx)
+	if err != nil{
+		return nil, errors.WithMessage(err, "oh no, it died")
+	}
+	// TODO add additional logic
+	return {{ .Domain }}s, nil
+}
+
+// {{ .DomainTitle }}Create will return will validate and add a new {{ .Domain }}.
+func (s *{{ .Domain }}Svc) {{ .DomainTitle }}Create(ctx context.Context, req {{ .DomainTitle }}) (*{{ .DomainTitle }}, error){
+	if req.Name == ""{
+		return nil, errors.New("Name must be supplied")
+	}
+	resp, err := s.wtr.{{ .DomainTitle }}Create(ctx, req)
+	if err != nil{
+		return nil, errors.WithMessage(err, "failed to add")
+	}
+	// TODO add additional logic
+
+	return resp, nil
+}
+

@@ -1,0 +1,41 @@
+// This code was created by a generator {{ .Date }}
+// CAUTION - If the generator is re-ran it will override the contents of this file
+
+package {{ .Domain }}s
+
+import "context"
+
+//go:generate 04-simple-mock-gen -type={{ .Domain }}Reader
+//go:generate 04-simple-mock-gen -type={{ .Domain }}Writer
+
+// {{ .DomainTitle }} defines a single object, validators etc can be added to this.
+type {{ .DomainTitle }} struct{
+   ID int
+   Name string
+   // TODO - add more properties
+}
+
+// {{ .DomainTitle }}Service will return all {{ .Domain }} from a data source.
+type {{ .DomainTitle }}Service interface{
+	{{ .DomainTitle }}s(ctx context.Context) ([]{{ .DomainTitle }}, error)
+	{{ .DomainTitle }}Create(ctx context.Context, req {{ .DomainTitle }}) (*{{ .DomainTitle }}, error)
+}
+
+
+// {{ .DomainTitle }}Reader will return all {{ .Domain }} from a data source.
+type {{ .DomainTitle }}Reader interface{
+	{{ .DomainTitle }}s(ctx context.Context) ([]{{ .DomainTitle }}, error)
+}
+
+// {{ .DomainTitle }}Writer will add and update {{ .Domain }}s to the data source.
+type {{ .DomainTitle }}Writer interface{
+	// {{ .DomainTitle }}Create will add a single {{ .DomainTitle }} to a data source.
+	{{ .DomainTitle }}Create(ctx context.Context, req {{ .DomainTitle }}) (*{{ .DomainTitle }}, error)
+}
+
+type {{ .DomainTitle }}ReaderWriter interface{
+	{{ .DomainTitle }}Reader
+	{{ .DomainTitle }}Writer 
+}
+
+

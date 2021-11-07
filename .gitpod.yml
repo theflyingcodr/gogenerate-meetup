@@ -1,5 +1,7 @@
 tasks:
   - init: go install github.com/matryer/moq@latest
+  - init: cd 04-simple-mock-gen && go install
 vscode:
   extensions:
     - golang.go
+    - https://github.com/jinliming2/vscode-go-template/releases/download/v0.2.1/vscode-go-template-0.2.1.vsix
