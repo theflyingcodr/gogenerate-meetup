@@ -1,0 +1,5 @@
+tasks:
+  - init: go install github.com/matryer/moq@latest
+vscode:
+  extensions:
+    - golang.go
