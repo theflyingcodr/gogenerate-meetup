@@ -5,3 +5,4 @@ vscode:
   extensions:
     - golang.go
     - https://github.com/jinliming2/vscode-go-template/releases/download/v0.2.1/vscode-go-template-0.2.1.vsix
+    - eamodio.gitlens
