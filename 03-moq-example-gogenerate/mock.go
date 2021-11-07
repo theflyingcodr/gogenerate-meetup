@@ -1,3 +1,3 @@
 package airplanes
 
-//go:generate moq -out airplane_mock.go . AirplaneStorer
+//go:generate moq -out airplane_mock.go . AirplaneReader

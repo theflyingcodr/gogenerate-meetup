@@ -20,7 +20,7 @@ var (
 	output   string
 )
 
-//go:embed mock.template
+//go:embed mock.go.tmpl
 var tmpl string
 
 func main() {

@@ -2,7 +2,7 @@ package airplanes
 
 import "context"
 
-// AirplaneStorer will return all airplanes from a data store.
-type AirplaneStorer interface{
+// AirplaneReader will return all airplanes from a data store.
+type AirplaneReader interface {
 	Airplanes(ctx context.Context) ([]string, error)
 }

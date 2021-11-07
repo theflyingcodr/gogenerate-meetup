@@ -8,6 +8,6 @@ This outputs a bit more code than our simple mocked struct we made ourselves, it
 
 The main advantage of this is it takes this job of you manually generating mocks away from you and places it at the responsibility of the machine. Mock generation is boring and you will need to go back to all your mocked objects and amend them as and when your interface contracts change or get added to. This is tedious.
 
-To run the mock execute in the cli `moq -out airplane_mock.go . AirplaneStorer`
+To run the mock execute in the cli `moq -out airplane_mock.go . AirplaneReader`
 
 The next example 03, shows how to make this task even easier with GoGenerate.
