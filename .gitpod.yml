@@ -1,6 +1,6 @@
 tasks:
   - init: go install github.com/matryer/moq@latest
-  - init: cd 04-simple-mock-gen && go install
+  - init: cd 04-simple-mock-gen && go install && cd ..
 vscode:
   extensions:
     - golang.go
