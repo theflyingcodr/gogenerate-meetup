@@ -7,10 +7,10 @@ import (
 )
 
 type airplaneSvc struct {
-	store AirplaneStorer
+	store AirplaneReader
 }
 
-func newAirplaneSvc(store AirplaneStorer) *airplaneSvc {
+func newAirplaneSvc(store AirplaneReader) *airplaneSvc {
 	return &airplaneSvc{store: store}
 }
 
