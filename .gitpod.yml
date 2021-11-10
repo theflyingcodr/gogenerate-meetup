@@ -4,6 +4,7 @@ tasks:
   - init: brew install bat
   - init: echo 'alias cat=bat' >>/home/gitpod/.profile
   - init: cd 04-simple-mock-gen && go install && cd ..
+  - command: source /home/gitpod/.profile
 vscode:
   extensions:
     - golang.go
