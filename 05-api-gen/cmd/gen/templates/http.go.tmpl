@@ -30,7 +30,7 @@ func (h *httpHandler) {{ .DomainTitle }}s(w http.ResponseWriter, r *http.Request
 
 	switch r.Method {
 	case http.MethodGet:
-		h.{{ .Domain }}(w, r)
+		h.{{ .Domain }}s(w, r)
 	case http.MethodPost:
 		h.create(w, r)
 	default:

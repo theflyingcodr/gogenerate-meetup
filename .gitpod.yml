@@ -1,5 +1,8 @@
 tasks:
   - init: go install github.com/matryer/moq@latest
+  - init: brew install httpie
+  - init: brew install bat
+  - init: alias cat=bat
   - init: cd 04-simple-mock-gen && go install && cd ..
 vscode:
   extensions:
